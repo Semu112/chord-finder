@@ -1,0 +1,270 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: #caddb2
+}
+
+a {
+  color: #00B7FF;
+}
+
+#keyboardContainer {
+
+  display: flex;
+  justify-content: center;
+  margin: 2px;
+
+}
+
+#keyboard {
+
+  display: flex;
+  outline: 2px solid black;
+  overflow-x: auto;
+  overflow-y: clip;
+  height: 20vh;
+  width: 70vw;
+  border-radius: 2px;
+
+}
+
+/* Info table */
+#info {
+
+  margin: auto;
+
+}
+
+#keyboard div[id*='C4']::before {
+
+  /* display: table; */
+  /* border-collapse: collapse; */
+  /* align-self: end; */
+  color: grey;
+  content: "C";
+  text-align: center;
+  /* vertical-align: bottom; */
+
+  /* Don't uncomment because div needs to be 100% of the height and width so the pink covers the whole key
+  height: auto;
+  width: auto; */
+  /* padding-bottom: 50%; */
+  /* margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto; */
+  z-index: 3;
+
+}
+
+.key {
+
+  /*Needed for middle C text styling*/
+  display: flex;
+  /* flex-direction: column; */
+  /* position: relative; */
+  /* align-items: flex-end; */
+  /* text-align: center; */
+  border: 1px solid black;
+  border-radius: 2px;
+  
+
+}
+
+.key::before {
+
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 2;
+
+  /*For C4 key*/
+  /* align-self: flex-end;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 25%; */
+
+}
+
+.key:hover::before {
+
+  background-color: rgba(234, 25, 171, 0.49);
+
+}
+
+.octave {
+
+  flex-grow: 1;
+  height: auto;
+
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  grid-template-rows: 5fr 3fr;
+
+}
+
+.white {
+
+  background: white;
+  z-index: 1;
+  min-width: 2.5em;
+
+  grid-row: 1/3;
+
+}
+
+/*Black keys*/
+.accidental {
+
+  /* padding: 15px; */
+  background-color: black;
+  z-index: 2;
+  width: 50%;
+  border-radius: 0px 0px 5px 5px;
+
+  grid-row: 1/2;
+  margin-right: auto;
+  margin-left: auto;
+
+}
+
+.alert {
+  display: inline-block;
+  border-radius: 5px;
+  background-color: rgb(245, 215, 66);
+  border: 2px solid rgb(245, 197, 66);
+  padding: 1.5em;
+}
+
+.alert::before {
+  font-family: "Font Awesome 5 Free";
+  content: "\f071";
+  font-weight: 300;
+  padding: 0.5em;
+  
+}
+
+.computed {
+  background-color: red;
+}
+
+.userActivated {
+  background-color: rgb(0, 210, 0);
+}
+
+.peek::before {
+  content: "";
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-color: rgba(255, 112, 241, 0.5);
+}
+
+.scale::before {
+  align-self: flex-end;
+  content: "";
+  background-color: yellow;
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 4px;
+  z-index: 4;
+  border: 1px solid black;
+}
+
+.hidden {
+  display: none;
+}
+
+.link:hover {
+  color: blue;
+  cursor: auto;
+}
+
+/* --- dropdown --- */
+input[type="radio"]{
+  display: none;
+  margin: 0;
+}
+
+.selectorContainer {
+  position: relative;
+  display: inline-block;
+}
+
+/*dropdown label box thingy*/
+.selectorContainer > label {
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 2px;
+}
+
+/*Dropdown carat*/
+.selectorContainer > label::after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f0d7";
+  font-weight: 600;
+  padding: 0.5em;
+}
+
+/*list*/
+ul {
+  display: block;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0;
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/*elements in list*/
+ul li{
+  display: block;
+  background-color: white;
+  border: 1px solid black;
+}
+
+/*elements in list on hover*/
+ul li:hover{
+  background-color: blue;
+  color: white;
+}
+
+ul label {
+  display: inline-block;
+  width: 100%;
+}
+
+/*selected element in list*/
+input:checked + label{
+  background-color: pink;
+}
+
+/* individual key positions */
+
+.C {  grid-column: 1/3; }
+
+.Db {  grid-column: 2/4;  }
+
+.D {  grid-column: 3/5;  }
+
+.Eb { grid-column: 4/6; }
+
+.E {  grid-column: 5/7; }
+
+.F {  grid-column: 7/9; }
+
+.Gb { grid-column: 8/10; }
+
+.G {  grid-column: 9/11;  }
+
+.Ab { grid-column: 10/12;  }
+
+.A  { grid-column: 11/13; }
+
+.Bb {grid-column: 12/14;  }
+
+.B  { grid-column: 13/15; }

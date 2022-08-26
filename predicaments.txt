@@ -1,0 +1,2 @@
+C4, Eb4, G4, Bb4, D5, Eb5, E5
+Outputs as c9add12, Eb7#7add9/C, not sure if the latter should be there

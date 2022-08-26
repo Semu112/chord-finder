@@ -28,17 +28,18 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
          let chords = [];
          // data.value.computedChords = [];
 
-         //Polychord loop
-         for(let i = 0; i < notes.length/6; i++){
-            chords[i] = [];
+         // //Polychord loop
+         // for(let i = 0; i < notes.length/6; i++){
+            // chords[i] = [];
 
-            let root = notes[i];
-            let semitones = getSemitonesFromNoteInput(notes.slice(i*3, 4));
+            let semitones = getSemitonesFromNoteInput(notes);
 
-            computeChordHelper([...semitones], 0, 0, chords[i]);
+            computeChordHelper([...semitones], 0, 0, chords);
 
             //Slash chord check, removes lowest semitone, adjusts rest of the array and tries to figure out a chord
             if(semitones.length >= 4){
+
+               let root = notes[0];
 
                semitones = semitones.slice(1);
 
@@ -52,26 +53,26 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
                computeChordHelper(semitones, 1, 0, upperSlashChords);
 
                for(let j = 0; j < upperSlashChords.length; j++){
-                  chords[i].push(upperSlashChords[j] + "/" + root.match(/^[A-G](#|b)?/i)[0]);
+                  chords.push(upperSlashChords[j] + "/" + root.match(/^[A-G](#|b)?/i)[0]);
                   console.log(`Added slash: ${upperSlashChords[j] + "/" + root}`);
                   console.log("upperSlashChords:");
                   console.log(upperSlashChords);
                }
 
-            }
+            // }
          }
 
-         //Concatenates any polychords
-         let chordsToReturn = chords[0];
-         for(let i = 1; i < chords.length; i++){
-            for(let j = 0; j < chords[i].length; j++){
-               for(let k = j; k < chords[i].length; k++){
-                  chordsToReturn.push(chords[i][j] + "_" + chords[i][k]);
-               }
-            }
-         }
+         // //Concatenates any polychords
+         // let chordsToReturn = chords[0];
+         // for(let i = 1; i < chords.length; i++){
+         //    for(let j = 0; j < chords[i].length; j++){
+         //       for(let k = j; k < chords[i].length; k++){
+         //          chordsToReturn.push(chords[i][j] + "_" + chords[i][k]);
+         //       }
+         //    }
+         // }
          
-         return chordsToReturn;
+         return chords;
       }
    }
 

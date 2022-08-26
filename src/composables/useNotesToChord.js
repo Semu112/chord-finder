@@ -31,29 +31,30 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
          // //Polychord loop
          // for(let i = 0; i < notes.length/6; i++){
             // chords[i] = [];
+            let root = notes[0].match(/^[A-G](#|b)?/i)[0];
 
             let semitones = getSemitonesFromNoteInput(notes);
 
-            computeChordHelper([...semitones], 0, 0, chords);
+            computeChordHelper([...semitones], root, 0, chords);
 
             //Slash chord check, removes lowest semitone, adjusts rest of the array and tries to figure out a chord
             if(semitones.length >= 4){
-
-               let root = notes[0];
 
                semitones = semitones.slice(1);
 
                let offset = semitones[0];
                for(let j in semitones){
                   semitones[j] -= offset;
-               }
+               }               
                console.log(`Slash checking semitones: ${semitones}`);
 
+               let newRoot = notes[1].match(/^[A-G](#|b)?/i)[0];
+
                let upperSlashChords = [];
-               computeChordHelper(semitones, 1, 0, upperSlashChords);
+               computeChordHelper(semitones, newRoot, 0, upperSlashChords);
 
                for(let j = 0; j < upperSlashChords.length; j++){
-                  chords.push(upperSlashChords[j] + "/" + root.match(/^[A-G](#|b)?/i)[0]);
+                  chords.push(upperSlashChords[j] + "/" + root);
                   console.log(`Added slash: ${upperSlashChords[j] + "/" + root}`);
                   console.log("upperSlashChords:");
                   console.log(upperSlashChords);
@@ -102,52 +103,82 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
 
    }
 
-   function computeChordHelper(semitones, rootIndexInConcat, acc, chords){
+   function computeChordHelper(semitones, root, acc, chords){
 
-      if(acc >= semitones.length){
+      let semitonesCopy = [...semitones];
+
+      if(acc >= semitonesCopy.length){
           return;
       }
 
-      semitones = removeRedundant(semitones);
+      semitonesCopy.splice(0, 1);
 
-      semitones.splice(0, 1);
+      // let root;
 
-      let root;
-
-      if(acc == 0){
-          root = data.value.notes.concat[rootIndexInConcat];
-      } else {
-          root = data.value.notes.concat[data.value.notes.concat.length - acc];
-      }
-      console.log(`root: ${root}`)
+      // if(acc == 0){
+      //     root = data.value.notes.concat[rootIndexInConcat];
+      // } else {
+      //     root = data.value.notes.concat[data.value.notes.concat.length - acc];
+      // }
+      // console.log(`root: ${root}`)
 
       let rollingChord = "";
-      root = root.match(/^[A-G](#|b)?/)[0];
+      // root = root.match(/^[A-G](#|b)?/)[0];
 
       // -- Decision tree start --
 
-      let third = getThird(semitones);
+      let third = getThird(semitonesCopy);
       if(third == "minor"){
-         root = root.toLowerCase();
+         rollingChord = root.toLowerCase();
+      } else {
+         rollingChord = root;
       }
-
-      rollingChord = root;
 
       if(third != ""){
 
-         let fifth = getFifth(semitones, third);
-         rollingChord += fifth;
+         let fifth = getFifth(semitonesCopy, third);
 
           if(fifth != "-1"){
+            rollingChord += fifth;
+
+            //Polychords
+            if(semitonesCopy.length >= 3){
+
+               // debugger;
+
+               let newRoot = allNotes.value[(allNotes.value.indexOf(root) + semitonesCopy[0])%12];
+               //Trust with the - acc, 3am morning
+               // let polyRootIndexInConcat = semitones.indexOf(semitonesCopy[0]) - acc;
+
+               //Justify semitonesCopy
+               let justified = [];
+               let offset = semitonesCopy[0];
+               for(let i = 0; i < semitonesCopy.length; i++){
+                     justified.push(semitonesCopy[i] - offset);
+               }
+
+               let overChords = [];
+               computeChordHelper(justified, newRoot, 0, overChords);
+
+               for(let i = 0; i < overChords.length; i++){
+                  chords.push(overChords[i] + "_" + rollingChord);
+               }
+
+               return;
+            }
 
               //Complex extensions
               let replace = rollingChord.includes(String.fromCharCode(176));
-              let complexReturn = getComplexExtension(semitones, fifth);
+              let complexReturn = getComplexExtension(semitonesCopy, fifth);
               replace = (complexReturn.includes(String.fromCharCode(176)) | complexReturn.includes(String.fromCharCode(248)) && replace);
               rollingChord = rollingChord.substring(0, rollingChord.length-replace) + complexReturn;
 
+            // debugger;
+
+            // semitonesCopy = removeRedundant(semitonesCopy);
+
               //Extensions
-              if(semitones.length == 1){
+              if(semitonesCopy.length == 1){
                   
                   console.log("Adding extension");
 
@@ -158,30 +189,35 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
                       mode = modes.value.minor;
                   }
 
-                  rollingChord += getExtension(semitones[0], mode);
-                  semitones.splice(0, 1);
+                  rollingChord += getExtension(semitonesCopy[0], mode);
+                  semitonesCopy.splice(0, 1);
               }
 
-              //Adds inversion
-              if(acc != 0){
+            //Adds inversion
+            if(acc != 0){
                rollingChord += "inv" + acc;
-           }
-          }
+            }
+         }
 
-          if(semitones.length == 0){
+          if(semitonesCopy.length == 0){
               console.log("Found " + rollingChord);
 
               chords.push(rollingChord);
-              // chords.semitones = semitones;
+              // chords.semitonesCopy = semitonesCopy;
           } else {
               // console.log("Semitones left over: ");
-              // console.log(semitones);
+              // console.log(semitonesCopy);
           }
       }
 
       //Inversion checker
       //Increases accumulator, alters semitones to show inversion, ex. converts [0, 4, 9] to [0, 4, -3(minussed 12)] then [-3, 0, 4] then [0, 3, 7]
       
+      debugger;
+
+      //Computes new root
+      let newRoot = allNotes.value[(allNotes.value.indexOf(root) + semitones[semitones.length-1])%12];
+
       //Inverts chord
       //Rotates array and minusses
       acc++;
@@ -194,10 +230,7 @@ export function useNotesToChord(allNotes, modes, data, keyboard, other){
           semitones[i] += Math.abs(temp);
       }
 
-      //Computes new root
-      rootIndexInConcat++;
-
-      computeChordHelper(semitones, rootIndexInConcat, acc);
+      computeChordHelper(semitones, newRoot, acc, chords);
 
    }
 

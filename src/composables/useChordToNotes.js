@@ -104,12 +104,13 @@ export function useChordToNotes(allNotes, modes, data, keyboard, other, alertsDi
 
     function chordToNotes(chord){
 
+        let notes = [];
+
         console.log(`chord: ${chord}`);
 
         let initTimeObj = new Date();
         let initTime = initTimeObj.getTime();
 
-        other.resetClass("computed");
         data.value.omissions = [];
 
         // chord = sanitise(chord);
@@ -142,13 +143,13 @@ export function useChordToNotes(allNotes, modes, data, keyboard, other, alertsDi
 
                 let semitones = getSemitones(chords[i]);
 
-                let notes = semitonesToNotes(semitones, root);
+                notes = semitonesToNotes(semitones, root);
 
-                other.activateNotes(notes, "computed");
+                // other.activateNotes(notes, "computed");
 
                 //Adds all to data structure
-                data.value.semitones = semitones;
-                data.value.notes.computed = notes;
+                // data.value.semitones = semitones;
+                // data.value.notes.computed = notes;
 
                 // console.log(`Chord after finished: ${chord}`);
                 // console.log(chord);
@@ -163,6 +164,8 @@ export function useChordToNotes(allNotes, modes, data, keyboard, other, alertsDi
         let endTime = endTimeObj.getTime();
 
         console.log(`~${endTime - initTime}ms`);
+
+        return notes;
     }
 
     // ---- Compute notes
@@ -170,9 +173,7 @@ export function useChordToNotes(allNotes, modes, data, keyboard, other, alertsDi
     function getSemitones(chord){
         let semitones = [];
 
-        data.value.semitones = [];
         alertsDiv.value.innerHTML = "";
-        
 
         //scale.key
         semitones.push(0);

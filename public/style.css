@@ -152,6 +152,10 @@ a {
   background-color: rgb(0, 210, 0);
 }
 
+.typed {
+  background-color: rgb(0, 210, 0);
+}
+
 .peek::before {
   content: "";
   width: 100%;
